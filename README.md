@@ -45,6 +45,21 @@ temporal holdout) earns +1.206 bits — 0 of 2 honest arms clear the bar.
 
 ## Regenerating Section 9
 
+**One-time join (GitHub copy only).** `data/chembl36_activities.csv.gz`
+(28,256,850 bytes) exceeds GitHub's 25 MB web-upload limit, so in this
+repository it is stored as two byte parts,
+`data/chembl36_activities.csv.gz.part00` and `.part01` (14,128,425 bytes
+each). Reassemble it before running anything:
+
+```sh
+bash join_data.sh
+```
+
+The script concatenates the parts and verifies the SHA-256
+(`1583f55cbb72676ff2a8f7a7083fcc27c3f2f5825162170d237445f81be45af7`)
+before continuing; the reassembled file is byte-identical to the
+deposited artifact.
+
 From this directory, with the requirements installed:
 
 ```sh
