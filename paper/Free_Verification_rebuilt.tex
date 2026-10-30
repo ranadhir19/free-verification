@@ -1,0 +1,978 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+
+\title{How Much Is Domain Knowledge Worth?\\ Pricing Hypothesis-Space Constraints in Bits\\ and Auditing Them on a Dated Corpus}
+\author{Ranadhir Ghosh\\
+FIS Global, Jacksonville, Florida, USA\\
+\texttt{ranadhir.ghosh@fisglobal.com}\\
+ORCID 0009-0001-5439-4258}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Claims that domain knowledge will rescue a discovery pipeline are usually
+rhetorical; this paper makes them auditable. Every structural constraint on
+a hypothesis space is summarised by two numbers --- its pruning power
+$\rho$ (the fraction of wrong hypotheses rejected) and soundness $\sigma$
+(of true hypotheses retained) --- priced by an accounting lemma at
+$\log_2(\sigma/(1-\rho))$ bits --- the constraint's positive likelihood
+ratio as a diagnostic test. We audit a dated corpus of 23{,}710 post-cutoff
+ChEMBL hypotheses (17{,}143 genuine, 6{,}567 spurious; measured error rate $p = 0.2770$).
+(i) Relational priors split: molecule-level
+guilt-by-association is at chance (AUCs $0.4929$--$0.4954$) and its filters
+are the study's most destructive objects; a target's pre-cutoff hit-rate is
+informative (AUC $0.7266$), its tractability filter earning $+0.857$ bits
+--- under half the bar. (ii) All five canonical drug-likeness rules are
+harmful: negative bits, edge-level 95\% intervals excluding zero for four
+of the five (Veber's indistinguishable from zero). (iii) Physicochemical
+structure supplies at most $+0.729$ bits under oracle-optimistic
+conditions, and $1.206$ bits in a leakage-free temporal holdout adding
+target identity, against $1.85$ bits required under the loop model of
+Section 3 ($1.99$ bits, static). Under an explicit threshold model, a sound
+constraint provably rescues a collapsed loop (positive bits, not pruning
+alone, are required --- correcting an earlier statement); an unsound one
+caps reachable truths at a fraction $\sigma$. The contribution is the
+audit: ``add domain knowledge'' becomes a threshold-comparable number ---
+and on this corpus, the canonical knowledge fails it.
+\end{abstract}
+
+\noindent\textbf{Keywords:} autonomous scientific discovery; inductive bias;
+hypothesis space; phase transition; false discovery; AI for science.
+
+\section{Introduction}
+
+\textbf{Research question.} Is the hypothesis-error rate of a closed
+discovery loop a controllable quantity rather than an exogenous one; can a
+structural constraint on the hypothesis space be priced in bits of evidence;
+and does any constraint available in a real scientific corpus supply enough
+bits to move a collapsed loop back across its throughput threshold?
+
+\textbf{Significance.} The companion throughput theory \cite{ghosh-throughput}
+gives operators four levers, all of which cost money: buy verification, buy
+capacity, cut reuse, or propose less. This paper prices a fifth that costs
+nothing at run time --- knowing something true about the problem --- on the
+same scale, so that ``we should add domain knowledge'' becomes a number that
+can be audited against a threshold. Because the price is explicit, the audit
+also convicts false constraints, and we show it doing so on rules that are in
+everyday industrial use.
+
+This paper extends the companion throughput theory
+\cite{ghosh-throughput} by supplying its missing upstream lever. It is
+written to be refereable on its own: Section 3 states every part of that
+theory the argument uses, with its operating points, and Section 3.3 lists
+explicitly what is derived here and what is imported.
+
+\textbf{Contributions.}
+
+\begin{enumerate}
+\item \textbf{An audit protocol and its accounting lemma (Section 4).} A
+constraint is a pair $(\rho, \sigma)$; it shifts error log-odds additively by
+$\log_2(\sigma/(1-\rho))$. The identity is Bayes' rule in odds form --- the
+multiplier is the positive likelihood ratio of the constraint read as a
+diagnostic test (Section 2) --- and we make no deeper claim for it. Its value
+is operational: it puts every knowledge claim on one scale, against one
+threshold, measurable on a dated corpus.
+\item \textbf{Measurement on a real corpus, and an honest negative
+(Section 9).} On 23{,}710 dated ChEMBL hypotheses the requirement is
+$1.85$--$1.99$ bits; molecule-level relational priors supply $\leq 0$
+and target tractability $+0.857$; all five canonical drug-likeness
+rules are harmful; structure supplies at most $+0.729$ bits even under
+oracle conditions, and $1.206$ bits in a leakage-free temporal
+holdout when target identity is added. Section 9.5 reports uncertainty intervals for every headline
+quantity.
+\item \textbf{Threshold consequences under an explicit model (Sections 3,
+5--8).} A corrected knowledge-rescue theorem (the guarantee requires
+positive bits; pruning alone can raise the error rate, as the corpus itself
+demonstrates); a matched-volume control attributing the rescue to
+selectivity rather than volume; a ceiling-and-scaling statement of what
+unsoundness costs; and the knowledge requirement of a published replication
+pipeline, computed under both the model-conditional and the static
+accounting.
+\end{enumerate}
+
+\section{Related work}
+
+Classical sequential analysis \cite{wald} and active learning \cite{settles}
+quantify the cost of labelling within a fixed hypothesis class. Work on
+false-discovery control \cite{benjamini} prescribes corrections over a fixed
+candidate set, and the anomaly replication literature \cite{hou} measures how
+badly that set is contaminated in practice. The companion closed-loop theory
+\cite{ghosh-throughput} adds the dynamical account in which the candidate set
+grows under reuse and derives the interior threshold $p_c$; it treats $p$ as
+given. The degradation of a reused candidate pool also has a published
+cousin in adaptive data analysis \cite{dwork}, where adaptively reusing a
+holdout destroys its validity unless the reuse is budgeted; the companion
+theory's reuse lever is the same phenomenon inside a discovery loop, and we
+flag the connection rather than rediscover it.
+
+On the knowledge side, physics-inspired symbolic regression prunes search
+using dimensional analysis and symmetry \cite{udrescu}, raising solve rates
+substantially, but offers no cost theory and no threshold; the geometric deep
+learning programme \cite{bronstein} derives architectures from symmetry
+without pricing them. That assumptions are indispensable for generalisation
+is classical \cite{mitchell, wolpert}, and bias itself has been treated as a
+learnable, priceable object before: Baxter's model of inductive-bias
+learning \cite{baxter} bounds the sample savings a well-chosen hypothesis
+space buys across related tasks, and Boopathy et al.\ \cite{boopathy}
+measure inductive-bias complexity directly in bits for supervised tasks. Our
+accounting lemma sits in an older lineage still: read as a diagnostic test,
+a constraint's multiplier $\sigma/(1-\rho)$ is its positive likelihood ratio,
+and ``conditioning on a passed test multiplies the odds by $\mathrm{LR}_+$''
+is the standard odds form of Bayes' rule in diagnostic testing
+\cite{deeks}. We therefore claim no novelty for the identity. Reviews of
+AI-driven discovery \cite{grosso} state the three ingredients --- inductive
+bias is unavoidable, sample complexity bounds learning, experimental
+constraints bind --- without a model linking them, while autonomous
+laboratories \cite{king, szymanski} report throughput without a predictive
+account of its ceiling. Our delta is narrower than a first: to our knowledge
+this is the first study to price a structural constraint \emph{in the same
+units as a closed-loop discovery-throughput threshold}, and to run that
+audit, with leakage controls and uncertainty intervals, on a real dated
+corpus (ChEMBL \cite{mendez}). The rules we audit are those of Lipinski et
+al.\ \cite{lipinski}, Veber et al.\ \cite{veber}, and Bickerton et al.\
+\cite{bickerton}.
+
+\section{The loop and its threshold: the model, stated in full}
+
+Earlier versions of this work left the threshold machinery in the companion
+manuscript. Everything the present argument uses is stated here.
+
+\subsection{The loop and the imported threshold law}
+
+A \emph{loop} runs in rounds. Each round the generator proposes $H$
+hypotheses, of which a fraction $p$ are wrong (the \emph{hypothesis-error
+rate}); a verification stage validates proposals subject to a capacity $V$
+(the maximum number of validations per round); a fraction $R$ of each
+round's proposal pool is drawn from previously seen candidates (\emph{reuse}).
+The loop's output is its \emph{validated-discovery throughput} $\bar D$,
+the mean number of validated true discoveries per round. A pipeline is
+\emph{productive} if $\bar D > 0$ in the long run and \emph{collapsed} if
+$\bar D = 0$.
+
+From the companion throughput theory \cite{ghosh-throughput} we import
+exactly four statements, and nothing else:
+
+\begin{itemize}
+\item[(M1)] \textbf{Interior threshold.} For fixed $(H, V, R)$ there is a
+critical error rate $p_c(H, V, R) \in (0, 1)$ such that the mean-field
+throughput is zero for $p > p_c$ and positive for $p < p_c$. ``Zero'' is the
+mean-field statement: finite loops simulated near $p_c$ exceed the
+mean-field prediction by a small finite-size effect (Section 11), which is
+why one arm of Table 1 shows throughput $0.068$ while sitting above its
+threshold.
+\item[(M2)] $\partial p_c / \partial H < 0$: proposing less raises the
+tolerable error rate.
+\item[(M3)] $\partial p_c / \partial V > 0$: buying verification raises it.
+\item[(M4)] $\partial p_c / \partial R < 0$: cutting reuse raises it.
+\end{itemize}
+
+Statements (M2)--(M4) are the companion theory's four priced levers. We write
+$p_c$ for the threshold at the operating point in force and $p_c'$ for the
+threshold after a constraint has shrunk the stream to $H'$.
+
+\subsection{Operating points and the threshold schedule}
+
+Two studies in this paper share one operating point, and a third uses
+another; we tabulate them here so that every downstream number can be
+checked.
+
+\emph{Simulation and ChEMBL studies (Sections 5--7 and 9).} At the
+unfiltered volume, $p_c = 0.0882$. The companion model's threshold rises as
+the retained fraction $r = H'/H$ falls; over the tabulated range the
+schedule is, to the precision printed in Tables 1--2,
+\begin{equation}
+p_c(r) \;=\; 0.0882 \;+\; 0.038\,(1 - r), \qquad r \in [0.800, 1].
+\label{eq:schedule}
+\end{equation}
+This schedule reproduces every $p_c'$ value in Table 1
+($0.0890, 0.0896, 0.0904$ at $r = 0.9785, 0.9641, 0.9425$), the rescue
+pruning $\rho^\star = 0.2794$ of Section 5, and the ChEMBL bar of Section 9
+($\rho^\star = 0.7234$ at $r = 0.800$, where it gives $p_c' = 0.0958$).
+The lower endpoint of the stated domain is that Section 9 rescue point
+itself: at $r = 0.800$ the schedule implies $\rho^\star = 0.7234$, agreeing
+with the printed $0.7234$ to within the rounding of the printed inputs
+(the two domain floors differ by $0.00001$ in $p_c$).
+% AUTHOR INPUT NEEDED: eq. (2) is the linear schedule that reproduces all
+% tabulated p_c' values of the companion model at this operating point to
+% printed precision. The author should confirm it against the companion
+% manuscript, or replace it with the companion's closed form.
+
+\emph{Replication-anchor study (Section 8).} The published-factor pipeline
+of \cite{hou} runs at $p_c = 0.125$ under strong governance and
+$p_c = 0.032$ under weak governance, where \emph{governance} names the
+pipeline's bundle of verification-capacity and reuse settings $(V, R)$.
+That pipeline's volume schedule is not reproduced here; Section 8 therefore
+reports its knowledge requirement under two accountings, one of which (the
+static accounting) needs no schedule at all.
+% AUTHOR INPUT NEEDED: the (H, V, R) values behind the two governance
+% regimes of Table 3, and that pipeline's p_c(r) schedule, live only in the
+% companion record. Supply them, or Table 3's model-conditional column
+% remains labelled as imported.
+
+\subsection{What is derived here, and what is imported}
+
+Derived in this paper: the accounting lemma (Section 4); the corrected
+rescue theorem and the ceiling/scaling statements (Sections 5 and 7), which
+are proved from the lemma plus (M1)--(M2); every $p'$ and bits figure in
+Tables 1--8, each of which is arithmetic on printed inputs; the
+static-threshold requirements (Sections 8 and 9), which use the lemma
+alone; and the intervals of Section 9.5. Imported from the companion record
+\cite{ghosh-throughput}: the threshold law (M1)--(M4) and its operating
+points; the schedule (\ref{eq:schedule}); the model-conditional column of
+Table 3; and the throughput columns of Tables 1--2 together with the
+simulation figure of Section 7, which are outputs of the companion
+simulator (Table 1: mean over 12 seeds) reported as such, not derived here.
+
+\section{The constraint operator and the accounting lemma}
+
+The loop proposes $H$ hypotheses per round, of which $H(1-p)$ are correct.
+
+\medskip
+\noindent\textbf{Definition 1 (Constraint).} A constraint $C$ applied to the
+proposal stream is the pair $(\rho, \sigma)$ where $\rho$ is the fraction of
+wrong hypotheses it rejects (its \emph{pruning power}) and $\sigma$ the
+fraction of true hypotheses it retains (its \emph{soundness}). $C$ is
+\emph{sound} iff $\sigma = 1$.
+
+After filtering,
+\begin{equation}
+p' = \frac{(1-\rho)\,p}{(1-\rho)\,p + \sigma(1-p)}, \qquad
+H' = H\big[\sigma(1-p) + (1-\rho)p\big].
+\end{equation}
+
+\medskip
+\noindent\textbf{Lemma 1 (Accounting identity).}
+$\log_2 \mathrm{odds}(p') = \log_2 \mathrm{odds}(p) -
+\log_2 \frac{\sigma}{1-\rho}$. The constraint therefore supplies
+$\log_2 \frac{\sigma}{1-\rho}$ \emph{bits} of evidence about hypothesis
+correctness, additively and at zero experimental cost.
+
+\medskip
+\noindent\emph{Proof.} The retained stream contains $(1-\rho)p$ wrong and
+$\sigma(1-p)$ true hypotheses (as fractions of the original stream), so
+$\mathrm{odds}(p') = \frac{(1-\rho)p}{\sigma(1-p)} =
+\mathrm{odds}(p)\cdot\frac{1-\rho}{\sigma}$. Taking $\log_2$ gives the
+identity. \hfill$\square$
+
+\medskip
+\noindent\textbf{Lineage.} Read as a diagnostic test \cite{deeks}, the
+constraint's retention rate on true hypotheses is a sensitivity ($\sigma$)
+and its retention rate on wrong hypotheses a false-positive rate ($1-\rho$);
+the multiplier $\sigma/(1-\rho)$ is the test's positive likelihood ratio
+$\mathrm{LR}_+$, and Lemma 1 is Bayes' rule in odds form. This is the Bayes
+budget in explicit form: evidence from examples and evidence from
+assumptions enter the same ledger. We use the lemma as bookkeeping --- the
+instrument that makes Sections 5--9 auditable --- not as a characterisation
+result.
+
+Note the sign. A constraint with $\sigma < 1-\rho$ supplies \emph{negative}
+bits: it removes more truth than error and actively degrades the generator.
+Section 9 exhibits five such rules in industrial use, plus a family of
+relational filters with the same property --- which is why ``pruning'' alone
+can never be the criterion: the sign of the bits is.
+
+\medskip
+\noindent\textbf{Remark (composition).} Constraints applied in sequence
+compose additively in bits when each constraint's $(\rho, \sigma)$ is
+measured on the stream it actually receives: filtering by $C_1$ then $C_2$
+multiplies the odds by $\mathrm{LR}_+(C_1) \cdot \mathrm{LR}_+(C_2 \mid
+\text{stream after } C_1)$. Pairs $(\rho, \sigma)$ measured independently on
+the same unfiltered corpus do \emph{not} compose this way. ``Independence''
+in this paper always means the sequential, on-stream sense.
+
+\medskip
+\noindent\textbf{Remark (bits price selectivity, not yield).} As
+$\rho \to 1$ at fixed $\sigma > 0$, the bit count grows without bound while
+the retained stream shrinks to $H\sigma(1-p)$ and the reachable truths stay
+capped at a fraction $\sigma$ (Section 7). Bits must therefore always be
+read together with $\sigma$ and with $H'$. A filter can prune 99\% of a
+stream while retaining 0.19\% of its truths --- Table 4, row 1 --- and the
+bit price alone does not say whether that trade serves the loop.
+
+\medskip
+\noindent\textbf{Numerical check.} Over 20,000 random $(p, \rho, \sigma)$
+triples the maximum absolute discrepancy in Lemma 1 is $3.65\mathrm{e}{-12}$
+bits. This verifies the floating-point evaluation of the algebra --- the
+identity against itself --- and nothing about any loop or corpus; we report
+it so that no reader mistakes it for evidence.
+
+\section{Knowledge rescue}
+
+\noindent\textbf{Proposition 2 (Double benefit, corrected).} Let
+$C = (\rho, \sigma)$ act on a loop at $(p, H)$, and write
+$b = \log_2 \frac{\sigma}{1-\rho}$ for its bit price.
+
+\begin{itemize}
+\item[(i)] $p' < p$ iff $b > 0$; $p' = p$ iff $b = 0$; $p' > p$ iff $b < 0$.
+\item[(ii)] $H' < H$ for every non-identity constraint ($\rho > 0$ or
+$\sigma < 1$); hence, by (M2), $p_c' \geq p_c$, strictly under the schedule
+(\ref{eq:schedule}) whenever $H' < H$.
+\item[(iii)] \emph{Rescue.} If $C$ is sound ($\sigma = 1$) and the loop is
+collapsed ($p > p_c$), there exists $\rho^\star < 1$ such that every
+$\rho > \rho^\star$ renders the loop productive.
+\item[(iv)] For an unsound constraint with $b > 0$, both sides of the
+productivity condition move favourably ($p$ falls, $p_c$ rises) but no
+$\rho^\star < 1$ is guaranteed in general; and for $b < 0$ the two sides
+move in \emph{opposite} senses --- $p$ rises while $p_c$ rises --- so a
+pruning constraint can deepen a collapse. Table 4's first row is the corpus
+instance: $\rho = 0.9889$ raises $p$ from $0.2770$ to $0.6952$.
+\end{itemize}
+
+\noindent\emph{Proof.} (i) By Lemma 1, filtering multiplies
+$\mathrm{odds}(p)$ by $(1-\rho)/\sigma = 2^{-b}$, and $p'$ is a strictly
+increasing function of its odds. (ii) $H'/H = \sigma(1-p) + (1-\rho)p
+= 1 - \big[(1-\sigma)(1-p) + \rho p\big] < 1$ unless $\sigma = 1$ and
+$\rho = 0$. (iii) For $\sigma = 1$, $p'(\rho)$ is continuous and strictly
+decreasing with $p'(\rho) \to 0$ as $\rho \to 1$, while
+$H'(\rho) \to H(1-p) > 0$ and $p_c(H'(\rho))$ stays at or below
+$p_c(H(1-p))$ (since $H'(\rho) \geq H(1-p)$ and $p_c$ is decreasing in
+volume) yet at or above $p_c(H) > 0$ (since $H'(\rho) \leq H$); hence
+$g(\rho) = p_c(H'(\rho)) - p'(\rho)$ is continuous,
+negative at $\rho = 0$ (the loop is collapsed), and positive near
+$\rho = 1$, so a crossing $\rho^\star$ exists, and $g$ is strictly
+increasing, so the crossing is unique. \hfill$\square$
+
+Two qualifications are part of the statement, not footnotes to it. First,
+the guarantee in (iii) is proved for sound constraints; the original,
+stronger slogan --- any $\rho > 0$ reduces $p$ --- is false, and this
+paper's own Table 4 is the counterexample (iv). Second, ``productive''
+certifies the \emph{sign} of $p_c' - p'$: positive long-run throughput in
+the model of Section 3. It does not by itself lower-bound the discovery
+\emph{rate}, which also scales with the retained volume $H'$; a
+high-$\rho$ filter can satisfy the condition while discovering very little
+per round. The economics of rescue --- that knowledge is ``an independent,
+and often cheaper, lever'' --- are therefore a claim about the threshold,
+priced in Section 8 in the units an operator actually faces.
+
+Table 1 shows a loop moving from permanent zero throughput to 33.284
+validated discoveries per round. No additional experiments were purchased;
+the entire change is a restriction of the hypothesis space.
+
+\begin{table}[t]
+\centering
+\caption{Rescue of a supercritical loop by a sound constraint. Operating
+point $p = 0.12$ against $p_c = 0.0882$; $\rho^\star = 0.2794$ under the
+schedule (\ref{eq:schedule}), at which $p' = p_c' = 0.0895$. Throughput is
+the simulated mean over 12 seeds (companion simulator, Section 3.3). The
+$\rho = 0.179$ arm sits above its shifted threshold yet shows throughput
+$0.068$, not $0$: the finite-size effect of (M1), cf.\ Section 11.}
+\begin{tabular}{lccccc}
+\toprule
+arm & $\rho$ & $p'$ & $p_c'$ & productive & throughput \\
+\midrule
+none & 0.000 & 0.1200 & 0.0882 & no & 0.000 \\
+sound below threshold & 0.179 & 0.1006 & 0.0890 & no & 0.068 \\
+sound at threshold & 0.299 & 0.0872 & 0.0896 & yes & 7.845 \\
+sound strong & 0.479 & 0.0663 & 0.0904 & yes & 33.284 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{The control: selectivity, not volume}
+
+A constraint shrinks the proposal stream, and shrinking $H$ alone raises
+$p_c$ (M2). The rescue could therefore be an artefact of reduced volume with
+no knowledge in it. We compare against a random filter discarding the same
+total fraction of proposals but blind to truth, which by construction leaves
+$p$ unchanged.
+
+\begin{table}[t]
+\centering
+\caption{Matched-volume control. Both arms discard the same fraction of
+proposals.}
+\begin{tabular}{lcccccc}
+\toprule
+& & retained & \multicolumn{2}{c}{knowledge filter} &
+\multicolumn{2}{c}{random filter} \\
+$\rho$ & & & $p'$ & throughput & $p'$ & throughput \\
+\midrule
+0.299 & & 0.964 & 0.0872 & 7.845 & 0.1200 & 0.000 \\
+0.479 & & 0.942 & 0.0663 & 33.284 & 0.1200 & 0.000 \\
+0.900 & & 0.892 & 0.0135 & 70.467 & 0.1200 & 0.000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Volume reduction alone rescues nothing at these parameters. The effect is
+attributable to selectivity. We note what this control does and does not
+show: inside a model where throughput is a function of $(p, H)$, a
+truth-blind filter moves only $H$, so the null result attributes the rescue
+to selectivity rather than volume \emph{within the model}; it cannot
+validate the model against a real loop, and no closed loop is run in this
+paper (Section 11).
+
+\section{The cost of unsoundness}
+
+If $\sigma < 1$ the constraint deletes true hypotheses, so the reachable set
+is capped. To state the cost precisely we need two quantities the earlier
+draft left undefined. Let $T$ be the number of true hypotheses in the
+declared universe --- the \emph{attainable truths} --- and let $\bar D_0$ be
+the mean validated discoveries per round of the unconstrained pipeline over
+the horizon in question.
+
+\medskip
+\noindent\textbf{Proposition 3 (Ceilings and overtaking, restated).}
+\begin{itemize}
+\item[(a)] \emph{Ceiling.} A constrained pipeline can validate at most
+$\sigma T$ truths in total; its ceiling equals the unconstrained
+pipeline's ($T$) iff $\sigma = 1$.
+\item[(b)] \emph{Rescue regime.} If the unconstrained pipeline is collapsed
+(throughput $0$) and the constrained one is productive, the constrained
+pipeline is never overtaken: the unconstrained pipeline discovers nothing,
+at any horizon.
+\item[(c)] \emph{Scaling horizon.} If the unconstrained pipeline sustains a
+constant mean rate $\bar D_0 > 0$ until it has accumulated $\sigma T$
+discoveries --- an assumption, violated by any saturating process near its
+own ceiling --- then it draws level with the constrained pipeline's
+permanent ceiling after $n \approx \sigma T / \bar D_0$ rounds.
+\end{itemize}
+
+\noindent\emph{Proof.} (a) The pipeline can only validate truths the filter
+retains; the filter retains a fraction $\sigma$ of true hypotheses, so at
+most $\sigma T$ of the universe's truths are ever reachable. (b) Immediate
+from the definitions. (c) Arithmetic under the stated constant-rate
+assumption. \hfill$\square$
+
+What soundness alone does \emph{not} decide is finite-horizon overtaking in
+general: with $\sigma = 1$ the ceilings coincide, but if the unconstrained
+loop is productive and faster per round, it reaches any fixed discovery
+count first. The earlier headline form of this result --- ``soundness alone
+decides whether a constrained pipeline is ever overtaken'' --- is true only
+in the rescue regime (b) and as a statement about ceilings (a), and we
+restrict it to those. The horizon in (c) is a scaling law, not an absolute
+round count (Section 11).
+
+This ceiling law is the same shape as the small-data advantage of
+architecturally constrained learners over flexible ones, derived here in an
+entirely different formalism. We note one sharp consequence visible in the
+companion simulator's computations: an unsound constraint with no pruning
+power ($\rho = 0$, $\sigma = 0.5$) supplies exactly $-1$ bit (Lemma 1),
+doubling the error odds --- on the simulated loop, which sat near its
+threshold, this took an already-productive pipeline from 38.101 to 0.000
+discoveries per round. (The direction is forced by the arithmetic; the
+figure itself is a reported output of the companion simulator at an
+operating point not tabulated in the printed record, cf.\ Section 3.3.) A
+false constraint does not merely cost coverage; it can extinguish the
+pipeline.
+
+\section{How much knowledge a real pipeline needs}
+
+Applying Lemma 1 to the published-factor replication anchor \cite{hou} gives
+the knowledge requirement directly. Table 3 reports it under two
+accountings. The \emph{static} columns are derivable in this paper from the
+lemma alone: the pruning a sound constraint needs if the threshold does not
+move, $(1-\rho^\star) \leq \mathrm{odds}(p_c)/\mathrm{odds}(p)$. The
+\emph{model-conditional} columns are the values computed under the companion
+model, in which the threshold also rises as the stream shrinks (schedule
+imported; Section 3.2). The two accountings bracket the requirement.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Knowledge required to return the published-factor pipeline to
+productivity. Anchor: Hou, Xue \& Zhang (2020), Replicating Anomalies.
+Model-conditional $\rho^\star$ and bits are imported from the companion
+model at that pipeline's operating points (Section 3.2); static values are
+derived here from Lemma 1.}
+\begin{tabular}{llccccccc}
+\toprule
+& & & & \multicolumn{2}{c}{model-conditional} &
+\multicolumn{2}{c}{static} \\
+governance & anchor & $p$ & $p_c$ & $\rho^\star$ & bits &
+$\rho^\star$ & bits \\
+\midrule
+strong governance & $t \geq 1.96$ & 0.650 & 0.125 & 0.8892 & 3.17 & 0.9231 & 3.70 \\
+strong governance & $t \geq 2.78$ & 0.821 & 0.125 & 0.9469 & 4.24 & 0.9689 & 5.00 \\
+weak governance & $t \geq 1.96$ & 0.650 & 0.032 & 0.9768 & 5.43 & 0.9822 & 5.81 \\
+weak governance & $t \geq 2.78$ & 0.821 & 0.032 & 0.9897 & 6.60 & 0.9928 & 7.12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three to seven bits of genuine structural knowledge would move that pipeline
+back across its own transition, under either accounting --- a modest
+requirement by the standards of an exact symmetry, and a concrete, auditable
+model-risk control.
+
+\section{Measurement on a real corpus}
+
+We now measure $(\rho, \sigma)$ rather than positing it. The corpus is the
+dated ChEMBL \cite{mendez} temporal-holdout landscape: a hypothesis is a
+post-cutoff candidate (target, compound) edge, true if the measured potency
+clears the threshold and wrong otherwise. The execution is specified
+in full in the Reproducibility section: ChEMBL release 36, a
+document-year cutoff of 2018, a potency threshold of pChEMBL
+$\geq 6.0$, and the eight highest-volume human single-protein targets
+under a selection rule fixed before execution; the edge-level dataset
+is deposited with the code.
+% Design facts (cutoff, threshold, target identities) are stated in
+% the Reproducibility section; the study was executed to a design fixed
+% before execution (see the deposited pre-registration).
+
+\textbf{Leakage rule.} A constraint may read only information available at
+proposal time. Measured potency (the label), post-cutoff study effort, and
+the candidate's own first-appearance year are excluded by construction.
+Physicochemical descriptors are admissible because they are computed from
+the candidate molecule's own structure, which is known before any assay.
+
+\textbf{The bar.} With 23{,}710 hypotheses, 17{,}143 genuine and 6{,}567
+spurious, the measured hypothesis-error rate is $p = 0.2770$ against
+$p_c = 0.0882$: the corpus, run through the loop at its pre-registered
+operating point \cite{ghosh-throughput}, is collapsed. The requirement on a
+sound constraint comes in the two accountings of Section 8. Against a static
+threshold, Lemma 1 alone requires $(1-\rho^\star) \leq
+\mathrm{odds}(p_c)/\mathrm{odds}(p) = 0.2525$, i.e.\ $\rho^\star = 0.7475$,
+or $1.986$ bits. Under the loop model the threshold rises as the stream
+shrinks: at the rescue point the retained fraction is $r = 0.800$ and the
+schedule (\ref{eq:schedule}) gives $p_c' = 0.0958$, relaxing the requirement
+to $\rho^\star = 0.7234$, i.e.\ $1.854$ bits. We quote the bar as
+$1.85$--$1.99$ bits; Section 9.5 shows the full sensitivity range over
+plausible schedules is $1.79$--$1.99$ bits, so no conclusion below turns on
+which accounting is used.
+
+\begin{table}[t]
+\centering
+\caption{Pre-cutoff relational constraints on ChEMBL. Negative bits indicate
+a filter that makes the hypothesis-error rate worse. Bits are computed from
+unrounded $(\rho, \sigma)$; recomputation from the displayed values can
+differ by up to $\approx 0.1$ bits on the extreme rows, where $\sigma$ is
+very small (cf.\ Section 9.5); the $\geq$3 row retains no true edge at
+all, so its bits are $-\infty$.}
+\begin{tabular}{lcccc}
+\toprule
+filter & $\rho$ & $\sigma$ & $p'$ & bits \\
+\midrule
+molecule was a potent binder of $\geq$1 target pre-cutoff & 0.9889 & 0.0019 & 0.6952 & -2.574 \\
+molecule was a potent binder of $\geq$2 targets pre-cutoff & 0.9988 & 0.0001 & 0.8000 & -3.384 \\
+molecule was a potent binder of $\geq$3 targets pre-cutoff & 0.9997 & 0.0000 & 1.0000 & $-\infty$ \\
+molecule seen at all pre-cutoff & 0.9837 & 0.0022 & 0.7431 & -2.916 \\
+target hit-rate pre-cutoff $\geq$ 0.5 & 0.4713 & 0.9574 & 0.1746 & 0.857 \\
+target hit-rate pre-cutoff $\geq$ 0.7 & 0.4992 & 0.9115 & 0.1739 & 0.864 \\
+both: potent molecule AND tractable target & 0.9963 & 0.0008 & 0.6316 & -2.162 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Relational priors: no signal from molecules, some from targets}
+
+Not one molecule-side prior supplies positive evidence; the target side is
+different. The rank AUC of the underlying features explains the split: mol
+potent pre 0.4954, mol seen pre 0.4929, tgt potent pre
+0.6689, tgt hitrate pre 0.7266 (0.5 denotes no signal). The
+molecule-level guilt-by-association prior is indistinguishable from
+chance. This corroborates, by an independent route, the companion
+criterion paper's \cite{ghosh-criterion} finding that the same cheap
+prior underperforms random selection on this corpus. A target's
+pre-cutoff hit-rate, by contrast, is the strongest single cheap feature
+measured, and the tractability rows of Table 4 are its operating points:
+selective because exactly one of the eight targets --- the hERG
+counterscreen channel, pre-cutoff hit-rate 0.2467 --- falls below 0.5,
+and worth $+0.864$ bits at the 0.7 cut. Section 9.5 adds the
+intervals: the molecule-level AUCs sit within noise of $0.5$, the
+extreme molecule rows rest on very small retained counts, and the
+tractability rows' edge-level intervals exclude zero --- though their
+by-target bootstrap, over only 8 clusters, does not: the tractability
+gain is one target deep.
+
+\subsection{Structure is informative but insufficient}
+
+Every structural descriptor supplies positive bits at its best cut. But
+the best attainable value, $+0.729$ bits with hindsight-chosen
+thresholds and an in-sample multivariate fit, still falls short of the
+model-conditional bar by $\approx 1.12$ bits, and of the static bar by
+$1.256$ bits. Section 9.5 shows its interval, $[0.65, 0.80]$, lies entirely
+below even the lowest plausible bar: the shortfall is not a sampling artefact.
+
+\begin{table}[t]
+\centering
+\caption{Physicochemical descriptors, 23{,}675 edges with resolved structure.
+Thresholds are chosen with hindsight subject to $\sigma \geq 0.50$, so these
+are optimistic upper bounds.}
+\begin{tabular}{lccccc}
+\toprule
+descriptor & AUC & $\rho$ & $\sigma$ & bits \\
+\midrule
+MolWt & 0.6234 & 0.6679 & 0.5006 & 0.592 \\
+MolLogP & 0.5401 & 0.5512 & 0.5188 & 0.209 \\
+TPSA & 0.6295 & 0.6906 & 0.5017 & 0.697 \\
+NumHDonors & 0.5700 & 0.4921 & 0.5992 & 0.238 \\
+NumHAcceptors & 0.6344 & 0.5279 & 0.6856 & 0.538 \\
+NumRotatableBonds & 0.5625 & 0.4928 & 0.6167 & 0.282 \\
+RingCount & 0.5991 & 0.6055 & 0.5446 & 0.465 \\
+NumAromaticRings & 0.5639 & 0.3365 & 0.7719 & 0.218 \\
+FractionCSP3 & 0.4998 & 0.3378 & 0.6922 & 0.064 \\
+HeavyAtomCount & 0.6262 & 0.6138 & 0.5525 & 0.516 \\
+QED & 0.4064 & 0.6302 & 0.5015 & 0.440 \\
+LipinskiViolations & 0.5687 & 0.0012 & 0.9995 & 0.001 \\
+all descriptors (oracle, in-sample) & 0.6515 & 0.6982 & 0.5003 & 0.729 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+One row of Table 5 invites misreading and we flag it: the
+LipinskiViolations \emph{descriptor}, swept as a score under the constraint
+$\sigma \geq 0.50$, has its hindsight-optimal cut at the near-trivial one ---
+retain every edge with at most three violations, $+0.001$ bits. Table 6 instead applies the canonical
+\emph{rule} itself as the filter, which forces the cut and loses $0.316$
+bits. The two rows measure different objects: what the violation count is
+worth as a score (a thousandth of a bit, at its best cut) versus what the rule costs as a
+mandate (negative).
+
+\subsection{The canonical drug-likeness rules are false constraints}
+
+All five standard filters supply negative bits on this task. The mechanism
+is visible in the descriptor table: QED has AUC 0.4064, i.e.\ inverted ---
+potency in this corpus rises with molecular size and complexity, so
+drug-likeness rules preferentially retain the less potent candidates.
+Lipinski's Rule of Five \cite{lipinski} is a true constraint for oral
+bioavailability and a false one for binding potency. The same restriction
+can be sound for one question and harmful for another, and the bit
+accounting of Lemma 1 is what makes the difference measurable rather than a
+matter of opinion. Section 9.5 shows four of the five verdicts are statistically
+decisive at edge level; Veber's interval includes zero, so that rule
+is harmful in point estimate only.
+
+\begin{table}[t]
+\centering
+\caption{Named, pre-registered medicinal-chemistry rules, applied without
+tuning.}
+\begin{tabular}{lcccc}
+\toprule
+rule & $\rho$ & $\sigma$ & bits & verdict \\
+\midrule
+Lipinski Ro5 pass (0 violations) & 0.3140 & 0.5510 & -0.316 & harmful \\
+MW $\leq$ 500 & 0.2220 & 0.6214 & -0.324 & harmful \\
+QED $\geq$ 0.5 (drug-like) & 0.4265 & 0.4393 & -0.385 & harmful \\
+Veber (RotB $\leq$ 10 and TPSA $\leq$ 140) & 0.1119 & 0.8870 & -0.002 & harmful \\
+lead-like (MW $\leq$ 350 and LogP $\leq$ 3) & 0.9239 & 0.0275 & -1.467 & harmful \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{A leakage-free temporal holdout}
+
+Finally we remove both forms of optimism: the structure--potency model is
+fitted on pre-cutoff edges only, and its decision threshold is chosen on
+pre-cutoff data only.
+
+\begin{table}[t]
+\centering
+\caption{Temporal holdout: trained on 55{,}525 pre-cutoff edges with
+resolved structure, applied to 23{,}675 post-cutoff candidates with
+resolved structure.}
+\begin{tabular}{lccccccc}
+\toprule
+arm & AUC train & AUC test & $\rho$ & $\sigma$ & bits (honest) & bits (oracle) \\
+\midrule
+structure only & 0.5967 & 0.6041 & 0.5467 & 0.5895 & 0.379 & 0.418 \\
+structure + target & 0.7415 & 0.7681 & 0.7113 & 0.6659 & 1.206 & 1.318 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The best honest value is 1.206 bits, against the oracle bound of 1.318 and a
+requirement of 1.85--1.99 bits. 0 of 2 honest arms clear the bar.
+
+\textbf{Where the optimism was.} The three measurements decompose the gap,
+and the two arms decompose it differently. For structure alone: fitting
+in-sample gave $+0.729$ bits; refitting on the pre-cutoff era and
+keeping a hindsight threshold gives 0.418; choosing the threshold
+honestly as well gives 0.379. The loss is again mostly temporal
+transfer, 0.311 bits, against 0.039 for threshold selection; the
+structure-only model's discrimination is weak in both eras and roughly
+stable across the cutoff (AUC 0.5967 train, 0.6041 test). For
+structure + target the decomposition inverts: the holdout oracle,
+1.318 bits, \emph{exceeds} the in-sample oracle, because target
+identity is more informative in the test era than in the training era
+(AUC 0.7415 train, 0.7681 test) --- plausibly because the panel's
+post-cutoff volume concentrates on its most tractable target (JAK2:
+6{,}549 of 23{,}675 test edges, pre-cutoff hit-rate
+0.8917). Honest threshold choice costs that arm 0.112 bits. A
+constraint is only worth the bits it carries forward: the best honest
+constraint carries 65\% of what the loop requires (against the
+model-conditional bar; 61\% against the static bar), and the
+structure-only constraint 20\% (19\% against the static bar).
+
+\subsection{Uncertainty}
+
+Every interval below is computed from this study's own $2 \times 2$ counts
+on the stated basis: 23{,}710 post-cutoff edges for the relational rows
+(17{,}143 true, 6{,}567 wrong) and 23{,}675 structure-resolved edges
+for the structure tables (17{,}117 true, 6{,}558 wrong). \emph{Method.} We
+compute Wilson score intervals for $\rho$ and $\sigma$ separately and
+propagate them to bits by the endpoint transformation
+$[\log_2(\sigma_{lo}/(1-\rho_{lo})), \log_2(\sigma_{hi}/(1-\rho_{hi}))]$ --- a
+conservative rectangle. AUC intervals use the Hanley--McNeil standard
+error. All edge-level intervals treat edges as independent; because the
+edge-level dataset is deposited with the code, the clustering correction
+--- a cluster bootstrap by molecule and by target --- is computed and
+reported below rather than deferred.
+
+\begin{table}[t]
+\centering
+\caption{Edge-level 95\% intervals for the headline quantities, computed
+from the study's deposited counts. All treat edges as independent and
+are lower bounds on the true uncertainty: edges cluster on 8 targets and
+on repeated molecules; the cluster bootstrap is reported in the text.}
+\begin{tabular}{lccc}
+\toprule
+quantity & estimate & 95\% interval & basis \\
+\midrule
+error rate $p$ & 0.2770 & $[0.271, 0.283]$ & counts \\
+Ro5 & -0.316 & $[-0.359, -0.273]$ & counts \\
+MW $\leq$ 500 & -0.324 & $[-0.359, -0.288]$ & counts \\
+QED $\geq$ 0.5 & -0.385 & $[-0.439, -0.330]$ & counts \\
+Veber & -0.002 & $[-0.022, +0.019]$ & counts \\
+lead-like & -1.467 & $[-1.717, -1.217]$ & counts \\
+potent binder $\geq$1 target (Table 4) & -2.574 & $[-3.399, -1.749]$ & counts \\
+potent binder $\geq$3 targets (Table 4) & $-\infty$ & $[-\infty, +1.424]$ & counts \\
+target hit-rate $\geq$ 0.7 (Table 4) & +0.864 & $[+0.823, +0.906]$ & counts \\
+all descriptors, oracle (Table 5) & +0.729 & $[+0.655, +0.804]$ & counts \\
+holdout structure + target, honest & +1.206 & $[+1.136, +1.276]$ & counts \\
+holdout structure only, honest & +0.379 & $[+0.323, +0.436]$ & counts \\
+AUC, mol seen pre (Section 9.1) & 0.4929 & $[0.485, 0.501]$ & Hanley--McNeil \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Three conclusions survive the intervals. First, four of the five
+canonical rules are decisively harmful at edge level: their intervals
+exclude zero, by margins of $0.27$--$1.22$ bits. The fifth, Veber's
+rule, is indistinguishable from zero ($-0.002$; interval
+$[-0.022, +0.019]$): harmful in point estimate, unproven in either
+direction. Second, the structure shortfall is not a sampling artefact:
+the oracle interval $[0.65, 0.80]$ lies entirely below
+the lowest plausible bar. Third, the relational verdict splits by side.
+The molecule rows are decisive at edge level --- the $\geq$1-target
+filter's interval $[-3.40, -1.75]$ excludes zero by a wide
+margin, on retained counts of 32 true and 73 wrong edges --- and
+the molecule-level AUC intervals bracket chance. The tractability
+row's edge-level interval, $[+0.82, +0.91]$, excludes zero on
+the positive side; the bootstrap paragraph below qualifies it.
+
+\textbf{Bar sensitivity.} The model-conditional bar depends on the schedule
+slope $\kappa$ of (\ref{eq:schedule}). Solving the rescue condition across
+$\kappa$: $\kappa = 0$ (static threshold) gives 1.986 bits;
+$\kappa = 0.019$ gives 1.917; $\kappa = 0.038$ (the operating point)
+gives 1.854; $\kappa = 0.057$ gives 1.795. The requirement is therefore
+$1.79$--$1.99$ bits under any schedule in a $\pm 50\%$ band around the
+operating point --- comfortably above the oracle supply under every entry.
+
+\textbf{Clustering.} The 23{,}710 edges cluster on only 8 targets,
+and molecules recur across edges; target-level features take at most 8
+distinct values. The intervals above are therefore anti-conservative
+for exactly the quantities a referee will ask about. With the
+edge-level dataset deposited, the cluster bootstrap is computed here
+rather than deferred (2,000 resamples, percentile intervals). By
+molecule, the intervals track the edge-level ones closely (oracle
+$[+0.67, +0.79]$; holdout structure + target
+$[+1.15, +1.27]$; the potent-binder $\geq$1 row
+$[-3.27, -1.99]$), because few molecules recur across many edges.
+By target --- only 8 clusters --- the intervals widen sharply: among
+the rules, Ro5, MW $\leq$ 500 and lead-like still exclude zero, but
+QED's ($[-0.89, +0.08]$) and Veber's do not; the oracle's is
+$[+0.39, +0.91]$; and the tractability row's is
+$[-0.02, +2.21]$, which includes zero: with eight targets, whether the
+tractability filter helps depends on which targets the panel happens
+to contain --- here, on a single counterscreen channel (hERG) sitting
+below the tractability line. The $\geq$3-target row retains no true
+edge, so its bits are $-\infty$ and no bootstrap interval exists:
+every resample is degenerate in the same way.
+
+\section{Discussion}
+
+The negative result is the useful one. The accounting frames a sharp
+expectation --- the bits must come from genuine structural knowledge rather
+than from the knowledge graph's topology --- and the measurement sharpens
+it: molecular topology supplies nothing, target-level tractability
+supplies a little, the standard rules supply less than nothing, and
+two-dimensional structure supplies roughly two fifths of what is
+required even under oracle conditions; the best honest learned
+constraint, which adds target identity to structure, supplies roughly
+two thirds. The residual is a concrete target
+--- binding-site geometry, docking, or a learned structure--activity model
+--- rather than a vague appeal to domain expertise.
+
+More broadly, the audit turns a rhetorical move into a procedure. Any
+proposed restriction of a hypothesis space can be assigned a $(\rho,
+\sigma)$ on a dated corpus and compared against the threshold its pipeline
+must clear. Restrictions that fail the test are not merely unhelpful;
+Proposition 3 and Lemma 1 together show the two ways they can be ruinous
+--- capping the reachable truths at a fraction $\sigma$, and, when their
+bits are negative, raising the error rate they were meant to lower.
+
+\section{Caveats}
+
+\begin{itemize}
+\item The corpus covers 8 high-volume human single-protein targets ---
+three kinases (VEGFR2, EGFR, JAK2), two ion channels (hERG, Nav1.7),
+two GPCRs (cannabinoid receptor 2, dopamine D2) and an aspartyl
+protease (BACE1) --- selected by the pre-registered volume rule of the
+Reproducibility section; target-level features therefore take few
+distinct values, and target-level conclusions are specific to this
+panel.
+\item $(\rho, \sigma)$ are measured on a realised landscape standing in for
+a generator's proposal distribution.
+\item The companion corpus built from Open Targets is degenerate for this
+question: its post-cutoff pool contains 0 spurious edges, so $p = 0$ and
+$\rho$ is undefined. It is reported as a limitation, not as a result.
+\item Near $p_c$ the simulation exceeds the mean-field prediction (the
+finite-size effect documented in the companion throughput paper
+\cite{ghosh-throughput}); the two are reported side by side rather than
+reconciled.
+\item Overtaking horizons scale with a declared universe size and are
+therefore a scaling law, not absolute round counts.
+\item The edge-level intervals of Section 9.5 treat edges as
+independent; the cluster bootstrap reported there is the corrective,
+and its by-target intervals, over only 8 clusters, remain wide.
+\item The threshold schedule (\ref{eq:schedule}) is the linear form that
+reproduces the companion model's tabulated values at the shared operating
+point to printed precision; when the companion theory is available in
+citable form, its closed form should replace it.
+\item Table 3's model-conditional requirements inherit the replication
+pipeline's operating points, which are not derivable from this manuscript;
+the static columns are the in-paper check on them.
+\end{itemize}
+
+\section*{Reproducibility}
+
+Every number in Section 9 regenerates from the rebuild package
+deposited with this manuscript: \texttt{build\_corpus.py} (the corpus,
+from the pinned ChEMBL 36 extract deposited alongside it),
+\texttt{descriptors.py} (RDKit descriptors), \texttt{measure\_relational.py}
+(Table 4 and the feature AUCs), \texttt{measure\_structure.py} (Tables 5--6),
+\texttt{holdout.py} (Table 7) and \texttt{intervals.py} (the bar, Table 8 and
+the cluster bootstrap), sharing \texttt{metrics.py} and \texttt{bar.py};
+\texttt{validate.py} recomputes every printed Section 9 number from the
+deposited artifacts (edge lists, descriptors, model scores) and diffs
+them against this manuscript. The design was fixed before execution in
+a pre-registration deposited with the package: ChEMBL release 36;
+document-year cutoff 2018, an edge's era being its (target, compound)
+pair's first-appearance year and pre-cutoff potency the maximum over
+pre-cutoff activities only; potency threshold pChEMBL $\geq 6.0$; and, as
+targets, the eight human single-protein targets with the most
+pre-cutoff edges (ties broken by post-cutoff edge count, then ChEMBL
+ID): CHEMBL4822 (Beta-secretase 1), CHEMBL279 (Vascular endothelial growth factor receptor 2), CHEMBL240 (Voltage-gated inwardly rectifying potassium channel KCNH2), CHEMBL4296 (Sodium channel protein type 9 subunit alpha), CHEMBL253 (Cannabinoid receptor 2), CHEMBL217 (D(2) dopamine receptor), CHEMBL203 (Epidermal growth factor receptor), CHEMBL2971 (Tyrosine-protein kinase JAK2). ``Tractable target'' in Table 4 means pre-cutoff
+hit-rate $\geq 0.5$. The numbers in Sections 3--8 are arithmetic on the
+inputs stated there or imported from the companion manuscripts, as
+Section 3.2 details; the simulation reuses the companion paper's
+simulator rather than reimplementing it.
+
+\textbf{Reproducibility gaps remaining.} The following items concern
+the companion manuscripts and remain open; this manuscript does not
+guess them: (1) citable forms (titles, preprint identifiers) for the
+two companion manuscripts \cite{ghosh-throughput, ghosh-criterion};
+(2) the $(H, V, R)$ values behind Table 3's two governance regimes and
+that pipeline's threshold schedule; (3) the
+simulator operating point behind the 38.101 figure of Section 7.
+
+\section*{Statements and Declarations}
+
+\subsection*{Funding}
+
+No external funding.
+
+\subsection*{Competing interests}
+
+The author is employed by FIS Global. The work is methodological and does
+not relate to any FIS product.
+
+\subsection*{Data availability}
+
+The study's data derive from ChEMBL release 36, a public resource
+(EBI), pinned by the release checksums recorded in the deposited
+package. The package --- extraction and measurement code, the
+extracted activity and target tables, edge lists, descriptors and
+model scores --- accompanies this manuscript and regenerates every
+Section 9 number offline.
+
+\subsection*{Author contributions}
+
+R.G.: conception, formal analysis, software, experiments, writing.
+
+\begin{thebibliography}{99}
+
+\bibitem{benjamini} Benjamini, Y. and Hochberg, Y. (1995). Controlling the
+false discovery rate. \emph{J. R. Stat. Soc. B} 57(1), 289--300.
+
+\bibitem{baxter} Baxter, J. (2000). A model of inductive bias learning.
+\emph{Journal of Artificial Intelligence Research} 12, 149--198.
+
+\bibitem{bickerton} Bickerton, G. R., Paolini, G. V., Besnard, J., Muresan,
+S. and Hopkins, A. L. (2012). Quantifying the chemical beauty of drugs.
+\emph{Nature Chemistry} 4, 90--98.
+
+\bibitem{boopathy} Boopathy, A., Liu, K., Hwang, J., Ge, S.,
+Mohammedsaleh, A. and Fiete, I. R. (2023). Model-agnostic measure of
+generalization difficulty. \emph{Proceedings of the 40th International
+Conference on Machine Learning}, PMLR 202.
+
+\bibitem{bronstein} Bronstein, M., Bruna, J., Cohen, T. and
+Veli\v{c}kovi\'{c}, P. (2021). Geometric deep learning: grids, groups,
+graphs, geodesics, and gauges. arXiv:2104.13478.
+
+\bibitem{deeks} Deeks, J. J. and Altman, D. G. (2004). Diagnostic tests 4:
+likelihood ratios. \emph{BMJ} 329, 168--169.
+
+\bibitem{dwork} Dwork, C., Feldman, V., Hardt, M., Pitassi, T., Reingold, O.
+and Roth, A. (2015). The reusable holdout: preserving validity in adaptive
+data analysis. \emph{Science} 349(6248), 636--638.
+
+\bibitem{grosso} Grosso, G., Mikuni, V. and Heinrich, L. (2026). Are we
+ready for AI-driven discovery? AI verification before the next fundamental
+physics breakthrough. arXiv:2607.10039.
+
+\bibitem{hou} Hou, K., Xue, C. and Zhang, L. (2020). Replicating anomalies.
+\emph{Review of Financial Studies} 33(5), 2019--2133.
+
+\bibitem{king} King, R. D. et al.\ (2009). The automation of science.
+\emph{Science} 324, 85--89.
+
+\bibitem{lipinski} Lipinski, C. A., Lombardo, F., Dominy, B. W. and Feeney,
+P. J. (2001). Experimental and computational approaches to estimate
+solubility and permeability in drug discovery and development settings.
+\emph{Advanced Drug Delivery Reviews} 46(1--3), 3--26.
+
+\bibitem{mendez} Mendez, D. et al.\ (2019). ChEMBL: towards direct
+deposition of bioassay data. \emph{Nucleic Acids Research} 47(D1),
+D930--D940.
+
+\bibitem{mitchell} Mitchell, T. (1980). The need for biases in learning
+generalizations. Rutgers CBM-TR-117.
+
+\bibitem{settles} Settles, B. (2009). Active learning literature survey.
+Univ.\ of Wisconsin--Madison CS-TR-1648.
+
+\bibitem{szymanski} Szymanski, N. J. et al.\ (2023). An autonomous
+laboratory for the accelerated synthesis of novel materials. \emph{Nature}
+624, 86--91.
+
+\bibitem{udrescu} Udrescu, S.-M. and Tegmark, M. (2020). AI Feynman: a
+physics-inspired method for symbolic regression. \emph{Science Advances} 6,
+eaay2631.
+
+\bibitem{veber} Veber, D. F., Johnson, S. R., Cheng, H.-Y., Smith, B. R.,
+Ward, K. W. and Kopple, K. D. (2002). Molecular properties that influence
+the oral bioavailability of drug candidates. \emph{Journal of Medicinal
+Chemistry} 45, 2615--2623.
+
+\bibitem{wald} Wald, A. (1945). Sequential tests of statistical hypotheses.
+\emph{Ann. Math. Statist.} 16(2), 117--186.
+
+\bibitem{wolpert} Wolpert, D. (1996). The lack of a priori distinctions
+between learning algorithms. \emph{Neural Computation} 8(7), 1341--1390.
+
+\bibitem{ghosh-throughput} Ghosh, R. (2026). [Closed-loop discovery
+throughput: a threshold theory.] Companion manuscript, unpublished.
+
+\bibitem{ghosh-criterion} Ghosh, R. (2026). [A criterion study of relational
+priors on the ChEMBL landscape.] Companion manuscript, unpublished.
+
+\end{thebibliography}
+
+\end{document}

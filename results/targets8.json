@@ -1,0 +1,127 @@
+{
+  "rule": "top 8 by pre-edge count desc; tie-break post-edge count desc, then target_chembl_id asc; universe = SINGLE PROTEIN, Homo sapiens",
+  "targets": [
+    {
+      "target_id": "CHEMBL4822",
+      "pref_name": "Beta-secretase 1",
+      "pre_edges": 8100,
+      "post_edges": 1887
+    },
+    {
+      "target_id": "CHEMBL279",
+      "pref_name": "Vascular endothelial growth factor receptor 2",
+      "pre_edges": 7953,
+      "post_edges": 2140
+    },
+    {
+      "target_id": "CHEMBL240",
+      "pref_name": "Voltage-gated inwardly rectifying potassium channel KCNH2",
+      "pre_edges": 7272,
+      "post_edges": 3825
+    },
+    {
+      "target_id": "CHEMBL4296",
+      "pref_name": "Sodium channel protein type 9 subunit alpha",
+      "pre_edges": 6804,
+      "post_edges": 970
+    },
+    {
+      "target_id": "CHEMBL253",
+      "pref_name": "Cannabinoid receptor 2",
+      "pre_edges": 6608,
+      "post_edges": 1205
+    },
+    {
+      "target_id": "CHEMBL217",
+      "pref_name": "D(2) dopamine receptor",
+      "pre_edges": 6566,
+      "post_edges": 2867
+    },
+    {
+      "target_id": "CHEMBL203",
+      "pref_name": "Epidermal growth factor receptor",
+      "pre_edges": 6483,
+      "post_edges": 4258
+    },
+    {
+      "target_id": "CHEMBL2971",
+      "pref_name": "Tyrosine-protein kinase JAK2",
+      "pre_edges": 5773,
+      "post_edges": 6558
+    }
+  ],
+  "ranking_top12": [
+    {
+      "target_id": "CHEMBL4822",
+      "pref_name": "Beta-secretase 1",
+      "pre_edges": 8100,
+      "post_edges": 1887
+    },
+    {
+      "target_id": "CHEMBL279",
+      "pref_name": "Vascular endothelial growth factor receptor 2",
+      "pre_edges": 7953,
+      "post_edges": 2140
+    },
+    {
+      "target_id": "CHEMBL240",
+      "pref_name": "Voltage-gated inwardly rectifying potassium channel KCNH2",
+      "pre_edges": 7272,
+      "post_edges": 3825
+    },
+    {
+      "target_id": "CHEMBL4296",
+      "pref_name": "Sodium channel protein type 9 subunit alpha",
+      "pre_edges": 6804,
+      "post_edges": 970
+    },
+    {
+      "target_id": "CHEMBL253",
+      "pref_name": "Cannabinoid receptor 2",
+      "pre_edges": 6608,
+      "post_edges": 1205
+    },
+    {
+      "target_id": "CHEMBL217",
+      "pref_name": "D(2) dopamine receptor",
+      "pre_edges": 6566,
+      "post_edges": 2867
+    },
+    {
+      "target_id": "CHEMBL203",
+      "pref_name": "Epidermal growth factor receptor",
+      "pre_edges": 6483,
+      "post_edges": 4258
+    },
+    {
+      "target_id": "CHEMBL2971",
+      "pref_name": "Tyrosine-protein kinase JAK2",
+      "pre_edges": 5773,
+      "post_edges": 6558
+    },
+    {
+      "target_id": "CHEMBL4792",
+      "pref_name": "Orexin receptor type 2",
+      "pre_edges": 5664,
+      "post_edges": 1858
+    },
+    {
+      "target_id": "CHEMBL244",
+      "pref_name": "Coagulation factor X",
+      "pre_edges": 5533,
+      "post_edges": 330
+    },
+    {
+      "target_id": "CHEMBL205",
+      "pref_name": "Carbonic anhydrase 2",
+      "pre_edges": 5445,
+      "post_edges": 3077
+    },
+    {
+      "target_id": "CHEMBL4005",
+      "pref_name": "Phosphatidylinositol 4,5-bisphosphate 3-kinase catalytic subunit alpha isoform",
+      "pre_edges": 5424,
+      "post_edges": 2206
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "structure_only": {
+    "auc_train": 0.5967274116364967,
+    "auc_test": 0.604058392553426,
+    "honest": {
+      "train_cut": 0.7148057951381168,
+      "direction": ">=",
+      "train_rho": 0.6287156132685088,
+      "train_sigma": 0.5015021896323455,
+      "train_bits": 0.4337313516815612,
+      "rho": 0.5466605672461116,
+      "sigma": 0.5895308757375708,
+      "p_prime": 0.2275719534598898,
+      "bits": 0.37897571762919735,
+      "ret_true": 10091,
+      "ret_wrong": 2973,
+      "ret_total": 13064,
+      "tot_true": 17117,
+      "tot_wrong": 6558
+    },
+    "oracle": {
+      "rho": 0.6251906068923452,
+      "sigma": 0.5007886896068237,
+      "p_prime": 0.2228467815049864,
+      "bits": 0.41804487027175735,
+      "ret_true": 8572,
+      "ret_wrong": 2458,
+      "ret_total": 11030,
+      "tot_true": 17117,
+      "tot_wrong": 6558,
+      "cut": 0.7291771861242868,
+      "direction": ">="
+    },
+    "n_train": 55525,
+    "n_test": 23675
+  },
+  "structure_target": {
+    "auc_train": 0.741548376466402,
+    "auc_test": 0.7680830831090325,
+    "honest": {
+      "train_cut": 0.7880384842942117,
+      "direction": ">=",
+      "train_rho": 0.7857714320881285,
+      "train_sigma": 0.5022405540279051,
+      "train_bits": 1.2292276456030524,
+      "rho": 0.711344922232388,
+      "sigma": 0.6659461354209265,
+      "p_prime": 0.1424164911224797,
+      "bits": 1.206058886456204,
+      "ret_true": 11399,
+      "ret_wrong": 1893,
+      "ret_total": 13292,
+      "tot_true": 17117,
+      "tot_wrong": 6558
+    },
+    "oracle": {
+      "rho": 0.7981091796279354,
+      "sigma": 0.5033008120581878,
+      "p_prime": 0.13321259684072845,
+      "bits": 1.3178456102729645,
+      "ret_true": 8615,
+      "ret_wrong": 1324,
+      "ret_total": 9939,
+      "tot_true": 17117,
+      "tot_wrong": 6558,
+      "cut": 0.8322854440572754,
+      "direction": ">="
+    },
+    "n_train": 55525,
+    "n_test": 23675
+  },
+  "train_basis": "structure-resolved pre edges",
+  "test_basis": "structure-resolved post edges"
+}

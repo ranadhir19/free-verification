@@ -1,0 +1,178 @@
+{
+  "potent_ge1": {
+    "by_molecule": {
+      "lo": -3.2744194878725534,
+      "hi": -1.9876152247380017,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23252
+    },
+    "by_target": {
+      "lo": -4.03895416806395,
+      "hi": -1.0513678056714102,
+      "valid": 1999,
+      "skipped": 1,
+      "n_clusters": 8
+    }
+  },
+  "potent_ge3": {
+    "by_molecule": {
+      "lo": null,
+      "hi": null,
+      "valid": 0,
+      "skipped": 2000,
+      "n_clusters": 23252
+    },
+    "by_target": {
+      "lo": null,
+      "hi": null,
+      "valid": 0,
+      "skipped": 2000,
+      "n_clusters": 8
+    }
+  },
+  "tgt_hr_ge70": {
+    "by_molecule": {
+      "lo": 0.8295805151930224,
+      "hi": 0.9003040387161467,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23252
+    },
+    "by_target": {
+      "lo": -0.0190531326866724,
+      "hi": 2.2077829158601467,
+      "valid": 1802,
+      "skipped": 198,
+      "n_clusters": 8
+    }
+  },
+  "rule_ro5": {
+    "by_molecule": {
+      "lo": -0.34674811796268623,
+      "hi": -0.2866276445142968,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": -0.7102020458728562,
+      "hi": -0.04536577304690125,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "rule_mw": {
+    "by_molecule": {
+      "lo": -0.3491564098550606,
+      "hi": -0.2999099102238091,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": -0.6477430742942919,
+      "hi": -0.06111057115702078,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "rule_qed": {
+    "by_molecule": {
+      "lo": -0.4228124884158723,
+      "hi": -0.34466587069402105,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": -0.889606141801183,
+      "hi": 0.08344536580165075,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "rule_veber": {
+    "by_molecule": {
+      "lo": -0.01658960961375532,
+      "hi": 0.012960043158654051,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": -0.0492609943313565,
+      "hi": 0.08554936292167718,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "rule_leadlike": {
+    "by_molecule": {
+      "lo": -1.6465803724938035,
+      "hi": -1.289667024929586,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": -2.0708161559745073,
+      "hi": -0.9269501119101473,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "oracle": {
+    "by_molecule": {
+      "lo": 0.6721865967161662,
+      "hi": 0.7880911084532166,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": 0.3867581731501819,
+      "hi": 0.9101890194760643,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "holdout_struct": {
+    "by_molecule": {
+      "lo": 0.33670291078606596,
+      "hi": 0.4196526255065805,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": 0.12171736067728776,
+      "hi": 0.49846543731195014,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  },
+  "holdout_struct_tgt": {
+    "by_molecule": {
+      "lo": 1.1501673241676957,
+      "hi": 1.265721355817375,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 23218
+    },
+    "by_target": {
+      "lo": 0.2680639820581325,
+      "hi": 2.5446943830091175,
+      "valid": 2000,
+      "skipped": 0,
+      "n_clusters": 8
+    }
+  }
+}

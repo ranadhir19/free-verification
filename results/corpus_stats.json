@@ -1,0 +1,17 @@
+{
+  "release": "ChEMBL 36",
+  "pool_rows_extract": 4896791,
+  "universe_targets": 5820,
+  "pairs_total_universe": 1253211,
+  "cutoff": 2018,
+  "theta": 6.0,
+  "pre_edges": 55559,
+  "post_edges": 23710,
+  "post_potent": 17143,
+  "post_wrong": 6567,
+  "p_error": 0.2769717418810628,
+  "pre_potent": 39310,
+  "pre_wrong": 16249,
+  "unique_mols_pre": 53572,
+  "unique_mols_post": 23252
+}

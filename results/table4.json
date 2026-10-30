@@ -1,0 +1,112 @@
+{
+  "rows": {
+    "potent_ge1": {
+      "rho": 0.988883813004416,
+      "sigma": 0.0018666511112407397,
+      "p_prime": 0.6952380952380952,
+      "bits": -2.574137799599504,
+      "ret_true": 32,
+      "ret_wrong": 73,
+      "ret_total": 105,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "potent_ge2": {
+      "rho": 0.9987817877265114,
+      "sigma": 0.00011666569445254623,
+      "p_prime": 0.8,
+      "bits": -3.3843132407194343,
+      "ret_true": 2,
+      "ret_wrong": 8,
+      "ret_total": 10,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "potent_ge3": {
+      "rho": 0.9996954469316278,
+      "sigma": 0.0,
+      "p_prime": 1.0,
+      "bits": NaN,
+      "ret_true": 0,
+      "ret_wrong": 2,
+      "ret_total": 2,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "mol_seen": {
+      "rho": 0.9837064108420892,
+      "sigma": 0.002158315347372105,
+      "p_prime": 0.7430555555555556,
+      "bits": -2.9163268614916795,
+      "ret_true": 37,
+      "ret_wrong": 107,
+      "ret_total": 144,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "tgt_hr_ge50": {
+      "rho": 0.4712958733059236,
+      "sigma": 0.9574170215248207,
+      "p_prime": 0.17460397284385215,
+      "bits": 0.8566868679397768,
+      "ret_true": 16413,
+      "ret_wrong": 3472,
+      "ret_total": 19885,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "tgt_hr_ge70": {
+      "rho": 0.4991624790619765,
+      "sigma": 0.9115090707577437,
+      "p_prime": 0.17388316151202748,
+      "bits": 0.8639143652973953,
+      "ret_true": 15626,
+      "ret_wrong": 3289,
+      "ret_total": 18915,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    },
+    "both": {
+      "rho": 0.996345363179534,
+      "sigma": 0.0008166598611678236,
+      "p_prime": 0.631578947368421,
+      "bits": -2.16192081938303,
+      "ret_true": 14,
+      "ret_wrong": 24,
+      "ret_total": 38,
+      "tot_true": 17143,
+      "tot_wrong": 6567
+    }
+  },
+  "aucs": {
+    "mol_potent_pre": 0.4953747257425715,
+    "mol_seen_pre": 0.49293236309473065,
+    "tgt_potent_pre": 0.6689429845584239,
+    "tgt_hitrate_pre": 0.7266292938498392
+  },
+  "tgt_hitrate_pre": {
+    "CHEMBL203": 0.7004473237698596,
+    "CHEMBL217": 0.8120621382881511,
+    "CHEMBL240": 0.2466996699669967,
+    "CHEMBL253": 0.8180992736077481,
+    "CHEMBL279": 0.8010813529485729,
+    "CHEMBL2971": 0.8917373982331543,
+    "CHEMBL4296": 0.6942974720752498,
+    "CHEMBL4822": 0.74
+  },
+  "tgt_potent_pre": {
+    "CHEMBL203": 4541,
+    "CHEMBL217": 5332,
+    "CHEMBL240": 1794,
+    "CHEMBL253": 5406,
+    "CHEMBL279": 6371,
+    "CHEMBL2971": 5148,
+    "CHEMBL4296": 4724,
+    "CHEMBL4822": 5994
+  },
+  "basis": {
+    "post_edges": 23710,
+    "post_true": 17143,
+    "post_wrong": 6567
+  }
+}

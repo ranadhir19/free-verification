@@ -1,0 +1,131 @@
+== stage A: corpus re-derivation from the deposited extract ==
+  [PASS] top-8 target rule -> ['CHEMBL4822', 'CHEMBL279', 'CHEMBL240', 'CHEMBL4296', 'CHEMBL253', 'CHEMBL217', 'CHEMBL203', 'CHEMBL2971']
+  [PASS] edges_pre exact re-derivation (55559 edges)
+  [PASS] edges_post exact re-derivation (23710 edges)
+  [PASS] corpus counts pre=55559 post=23710 p=0.276972
+== stage B: tables, AUCs, bar, bootstrap recomputation ==
+  [PASS] table4 potent_ge1 bits mine=-2.5741 stored=-2.574137799599504
+  [PASS] table4 potent_ge2 bits mine=-3.3843 stored=-3.3843132407194343
+  [PASS] table4 potent_ge3 bits mine=nan stored=nan
+  [PASS] table4 mol_seen bits mine=-2.9163 stored=-2.9163268614916795
+  [PASS] table4 tgt_hr_ge50 bits mine=0.8567 stored=0.8566868679397768
+  [PASS] table4 tgt_hr_ge70 bits mine=0.8639 stored=0.8639143652973953
+  [PASS] table4 both bits mine=-2.1619 stored=-2.16192081938303
+  [PASS] auc mol_potent_pre 0.495375
+  [PASS] auc mol_seen_pre 0.492932
+  [PASS] auc tgt_potent_pre 0.668943
+  [PASS] auc tgt_hitrate_pre 0.726629
+  [PASS] structure basis 23675 edges
+  [PASS] table5 MolWt bits=+0.5919
+  [PASS] table5 MolLogP bits=+0.2092
+  [PASS] table5 TPSA bits=+0.6973
+  [PASS] table5 NumHDonors bits=+0.2383
+  [PASS] table5 NumHAcceptors bits=+0.5384
+  [PASS] table5 NumRotatableBonds bits=+0.2821
+  [PASS] table5 RingCount bits=+0.4653
+  [PASS] table5 NumAromaticRings bits=+0.2183
+  [PASS] table5 FractionCSP3 bits=+0.0639
+  [PASS] table5 HeavyAtomCount bits=+0.5164
+  [PASS] table5 QED bits=+0.4396
+  [PASS] table5 LipinskiViolations bits=+0.0010
+  [PASS] table6 lipinski_ro5 bits=-0.3161
+  [PASS] table6 mw_le500 bits=-0.3241
+  [PASS] table6 qed_ge05 bits=-0.3847
+  [PASS] table6 veber bits=-0.0017
+  [PASS] table6 leadlike bits=-1.4674
+  [PASS] table5 oracle (deposited scores) bits=+0.7294
+  [PASS] table5 oracle (refit AUC) refit auc=0.6515 stored=0.6515
+  [PASS] table7 structure_only (deposited scores) honest bits=+0.3790
+  [PASS] table7 structure_only (refit AUCs) 
+  [PASS] table7 structure_target (deposited scores) honest bits=+1.2061
+  [PASS] table7 structure_target (refit AUCs) 
+  [PASS] bar static bits=1.9856
+  [PASS] bar kappa=0.0 bits=1.9856
+  [PASS] bar kappa=0.019 bits=1.9175
+  [PASS] bar kappa=0.038 bits=1.8540
+  [PASS] bar kappa=0.057 bits=1.7947
+  [PASS] bootstrap potent_ge1 by_molecule [-3.274, -1.988] valid=2000
+  [PASS] bootstrap potent_ge1 by_target [-4.039, -1.051] valid=1999
+  [PASS] bootstrap potent_ge3 by_molecule degenerate valid=0
+  [PASS] bootstrap potent_ge3 by_target degenerate valid=0
+  [PASS] bootstrap tgt_hr_ge70 by_molecule [+0.830, +0.900] valid=2000
+  [PASS] bootstrap tgt_hr_ge70 by_target [-0.019, +2.208] valid=1802
+  [PASS] bootstrap rule_ro5 by_molecule [-0.347, -0.287] valid=2000
+  [PASS] bootstrap rule_ro5 by_target [-0.710, -0.045] valid=2000
+  [PASS] bootstrap rule_mw by_molecule [-0.349, -0.300] valid=2000
+  [PASS] bootstrap rule_mw by_target [-0.648, -0.061] valid=2000
+  [PASS] bootstrap rule_qed by_molecule [-0.423, -0.345] valid=2000
+  [PASS] bootstrap rule_qed by_target [-0.890, +0.083] valid=2000
+  [PASS] bootstrap rule_veber by_molecule [-0.017, +0.013] valid=2000
+  [PASS] bootstrap rule_veber by_target [-0.049, +0.086] valid=2000
+  [PASS] bootstrap rule_leadlike by_molecule [-1.647, -1.290] valid=2000
+  [PASS] bootstrap rule_leadlike by_target [-2.071, -0.927] valid=2000
+  [PASS] bootstrap oracle by_molecule [+0.672, +0.788] valid=2000
+  [PASS] bootstrap oracle by_target [+0.387, +0.910] valid=2000
+  [PASS] bootstrap holdout_struct by_molecule [+0.337, +0.420] valid=2000
+  [PASS] bootstrap holdout_struct by_target [+0.122, +0.498] valid=2000
+  [PASS] bootstrap holdout_struct_tgt by_molecule [+1.150, +1.266] valid=2000
+  [PASS] bootstrap holdout_struct_tgt by_target [+0.268, +2.545] valid=2000
+== stage C: printed values in Free_Verification_rebuilt.tex ==
+  [PASS] tex table4 potent_ge1 got=[0.9889, 0.0019, 0.6952, -2.574] want=[0.9889, 0.0019, 0.6952, -2.5741]
+  [PASS] tex table4 potent_ge2 got=[0.9988, 0.0001, 0.8, -3.384] want=[0.9988, 0.0001, 0.8, -3.3843]
+  [PASS] tex table4 mol_seen got=[0.9837, 0.0022, 0.7431, -2.916] want=[0.9837, 0.0022, 0.7431, -2.9163]
+  [PASS] tex table4 tgt_hr_ge50 got=[0.4713, 0.9574, 0.1746, 0.857] want=[0.4713, 0.9574, 0.1746, 0.8567]
+  [PASS] tex table4 tgt_hr_ge70 got=[0.4992, 0.9115, 0.1739, 0.864] want=[0.4992, 0.9115, 0.1739, 0.8639]
+  [PASS] tex table4 both got=[0.9963, 0.0008, 0.6316, -2.162] want=[0.9963, 0.0008, 0.6316, -2.1619]
+  [PASS] tex table4 potent_ge3 (-inf) cells=['0.9997', '0.0000', '1.0000', '$-\\infty$ \\\\']
+  [PASS] tex table5 MolWt got=[0.6234, 0.6679, 0.5006, 0.592] want=[0.6234, 0.6679, 0.5006, 0.5919]
+  [PASS] tex table5 MolLogP got=[0.5401, 0.5512, 0.5188, 0.209] want=[0.5401, 0.5512, 0.5188, 0.2092]
+  [PASS] tex table5 TPSA got=[0.6295, 0.6906, 0.5017, 0.697] want=[0.6295, 0.6906, 0.5017, 0.6973]
+  [PASS] tex table5 NumHDonors got=[0.57, 0.4921, 0.5992, 0.238] want=[0.57, 0.4921, 0.5992, 0.2383]
+  [PASS] tex table5 NumHAcceptors got=[0.6344, 0.5279, 0.6856, 0.538] want=[0.6344, 0.5279, 0.6856, 0.5384]
+  [PASS] tex table5 NumRotatableBonds got=[0.5625, 0.4928, 0.6167, 0.282] want=[0.5625, 0.4928, 0.6167, 0.2821]
+  [PASS] tex table5 RingCount got=[0.5991, 0.6055, 0.5446, 0.465] want=[0.5991, 0.6055, 0.5446, 0.4653]
+  [PASS] tex table5 NumAromaticRings got=[0.5639, 0.3365, 0.7719, 0.218] want=[0.5639, 0.3365, 0.7719, 0.2183]
+  [PASS] tex table5 FractionCSP3 got=[0.4998, 0.3378, 0.6922, 0.064] want=[0.4998, 0.3378, 0.6922, 0.0639]
+  [PASS] tex table5 HeavyAtomCount got=[0.6262, 0.6138, 0.5525, 0.516] want=[0.6262, 0.6138, 0.5525, 0.5164]
+  [PASS] tex table5 QED got=[0.4064, 0.6302, 0.5015, 0.44] want=[0.4064, 0.6302, 0.5015, 0.4396]
+  [PASS] tex table5 LipinskiViolations got=[0.5687, 0.0012, 0.9995, 0.001] want=[0.5687, 0.0012, 0.9995, 0.001]
+  [PASS] tex table5 oracle got=[0.6515, 0.6982, 0.5003, 0.729] want=[0.6515, 0.6982, 0.5003, 0.7294]
+  [PASS] tex table6 lipinski_ro5 got=[0.314, 0.551, -0.316] want=[0.314, 0.551, -0.3161]
+  [PASS] tex table6 mw_le500 got=[0.222, 0.6214, -0.324] want=[0.222, 0.6214, -0.3241]
+  [PASS] tex table6 qed_ge05 got=[0.4265, 0.4393, -0.385] want=[0.4265, 0.4393, -0.3847]
+  [PASS] tex table6 veber got=[0.1119, 0.887, -0.002] want=[0.1119, 0.887, -0.0017]
+  [PASS] tex table6 leadlike got=[0.9239, 0.0275, -1.467] want=[0.9239, 0.0275, -1.4674]
+  [PASS] tex table7 structure_only got=[0.5967, 0.6041, 0.5467, 0.5895, 0.379, 0.418] want=[0.5967, 0.6041, 0.5467, 0.5895, 0.379, 0.418]
+  [PASS] tex table7 structure_target got=[0.7415, 0.7681, 0.7113, 0.6659, 1.206, 1.318] want=[0.7415, 0.7681, 0.7113, 0.6659, 1.2061, 1.3178]
+  [PASS] tex table8 rule_ro5 got=[-0.316, -0.359, -0.273] want=[-0.3161, -0.359, -0.2728]
+  [PASS] tex table8 rule_mw got=[-0.324, -0.359, -0.288] want=[-0.3241, -0.3594, -0.2884]
+  [PASS] tex table8 rule_qed got=[-0.385, -0.439, -0.33] want=[-0.3847, -0.4389, -0.3299]
+  [PASS] tex table8 rule_veber got=[-0.002, -0.022, 0.019] want=[-0.0017, -0.0216, 0.0186]
+  [PASS] tex table8 rule_leadlike got=[-1.467, -1.717, -1.217] want=[-1.4674, -1.7172, -1.2171]
+  [PASS] tex table8 potent_ge1 got=[-2.574, -3.399, -1.749] want=[-2.5741, -3.3991, -1.7486]
+  [PASS] tex table8 tgt_hr_ge70 got=[0.864, 0.823, 0.906] want=[0.8639, 0.8226, 0.9057]
+  [PASS] tex table8 oracle got=[0.729, 0.655, 0.804] want=[0.7294, 0.655, 0.8044]
+  [PASS] tex table8 holdout_struct_tgt got=[1.206, 1.136, 1.276] want=[1.2061, 1.1362, 1.2764]
+  [PASS] tex table8 holdout_struct got=[0.379, 0.323, 0.436] want=[0.379, 0.3229, 0.4356]
+  [PASS] tex table8 potent_ge3 (-inf) cells=['$-\\infty$', '$[-\\infty, +1.424]$', 'counts \\\\']
+  [PASS] tex table8 p got=[0.277, 0.271, 0.283] want=[0.277, 0.2713, 0.2827]
+  [PASS] tex table8 auc got=[0.4929, 0.485, 0.501] want=[0.4929, 0.4847, 0.5012]
+  [PASS] tex abstract counts got=[17143.0, 6567.0, 0.277] want=[17143, 6567, 0.277]
+  [PASS] tex bar static got=[0.7475, 1.986] want=[0.7475, 1.9856]
+  [PASS] tex bar model got=[0.7234, 1.854] want=[0.7234, 1.854]
+  [PASS] tex s5 instance got=[0.9889, 0.277, 0.6952] want=[0.9889, 0.277, 0.6952]
+  [PASS] tex s4 aside got=[0.19] want=[0.19]
+  [PASS] tex s9.4 best honest got=[1.206, 1.318] want=[1.2061, 1.3178]
+  [PASS] tex s9.1 aucs got=[0.4954, 0.4929, 0.6689, 0.7266] want=[0.4954, 0.4929, 0.6689, 0.7266]
+  [PASS] tex reproducibility lists CHEMBL4822 
+  [PASS] tex reproducibility lists CHEMBL279 
+  [PASS] tex reproducibility lists CHEMBL240 
+  [PASS] tex reproducibility lists CHEMBL4296 
+  [PASS] tex reproducibility lists CHEMBL253 
+  [PASS] tex reproducibility lists CHEMBL217 
+  [PASS] tex reproducibility lists CHEMBL203 
+  [PASS] tex reproducibility lists CHEMBL2971 
+  [PASS] tex provenance (release/cutoff/threshold) 
+== stage D: near-miss negative checks ==
+  [PASS] near-miss (i) theta 6.5 changes post potent count 6.5 -> 14113 vs 17143
+  [PASS] near-miss (ii) dropping first target changes counts without CHEMBL4822: 21823 edges
+  [PASS] near-miss (iii) shuffled labels destroy potent>=1 signal shuffle mean=+0.0268 sd=0.3201 observed z=-8.1
+
+OVERALL PASS

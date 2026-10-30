@@ -1,0 +1,6 @@
+{
+  "rdkit_version": "2026.09.1",
+  "smiles_rows": 76623,
+  "parsed_ok": 76623,
+  "parse_failures": 0
+}
